@@ -15,7 +15,7 @@ class SignalConnection extends React.Component<{}, IState> {
   public state: IState = {
     connected: false,
     error: '',
-    tables: []
+    tables: {}
   };
 
   constructor(props: any) {
