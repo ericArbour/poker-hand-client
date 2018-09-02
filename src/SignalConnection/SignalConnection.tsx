@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { HubConnectionBuilder } from '@aspnet/signalr';
-import Table from 'shared/src/components/Table/Table';
-import { ITable } from 'shared/src/types/interfaces';
+import Table from '../shared/components/Table/Table';
+import { ITable } from '../shared/types/interfaces';
 
 const connection = new HubConnectionBuilder()
   .withUrl('http://192.168.1.78:5000/pokerHub')
