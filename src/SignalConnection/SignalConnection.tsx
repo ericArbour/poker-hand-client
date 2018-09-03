@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { HubConnectionBuilder } from '@aspnet/signalr';
-import Table from '../shared/components/Table/Table';
+import Hand from '../Hand/Hand';
 import { ITable } from '../shared/types/interfaces';
 
 const connection = new HubConnectionBuilder()
@@ -8,20 +8,22 @@ const connection = new HubConnectionBuilder()
   .build();
 
 interface IState {
-  connected: boolean;
   error: string;
-  tableInfo: ITable | null;
+  isAtTable: boolean;
+  isConnected: boolean;
+  isGamePlaying: boolean;
+  isViewingLobby: boolean;
   tables: object;
-  viewingLobby: boolean;
 }
 
 class SignalConnection extends React.Component<{}, IState> {
   public state: IState = {
-    connected: false,
     error: '',
-    tableInfo: null,
-    tables: {},
-    viewingLobby: false
+    isAtTable: false,
+    isConnected: false,
+    isGamePlaying: false,
+    isViewingLobby: false,
+    tables: {}
   };
 
   constructor(props: any) {
@@ -34,20 +36,24 @@ class SignalConnection extends React.Component<{}, IState> {
   public componentDidMount() {
     connection
       .start()
-      .then(() => this.setState({ connected: true }))
+      .then(() => this.setState({ isConnected: true }))
       .catch(err => this.setState({ error: err.toString() }));
 
     connection.on('ViewTables', tables => {
-      this.setState({ tables, viewingLobby: true });
+      this.setState({ tables, isViewingLobby: true });
     });
 
-    connection.on('TableUpdated', tableInfo => {
-      this.setState({ tableInfo });
+    connection.on('JoinedTable', (isGamePlaying: boolean) => {
+      this.setState({ isAtTable: true, isViewingLobby: false, isGamePlaying });
+    });
+
+    connection.on('GameStarted', (isGamePlaying: boolean) => {
+      this.setState({ isGamePlaying });
     });
   }
 
   public getTables() {
-    if (this.state.connected) {
+    if (this.state.isConnected) {
       connection
         .invoke('GetTables')
         .catch(err => this.setState({ error: err.toString() }));
@@ -55,7 +61,7 @@ class SignalConnection extends React.Component<{}, IState> {
   }
 
   public joinTable(event: React.MouseEvent<HTMLElement>) {
-    if (this.state.connected) {
+    if (this.state.isConnected) {
       connection
         .invoke('JoinTable', event.currentTarget.id)
         .catch(err => this.setState({ error: err.toString() }));
@@ -63,7 +69,7 @@ class SignalConnection extends React.Component<{}, IState> {
   }
 
   public render() {
-    if (!this.state.connected) {
+    if (!this.state.isConnected) {
       return <div>Connecting...</div>;
     }
 
@@ -71,7 +77,7 @@ class SignalConnection extends React.Component<{}, IState> {
       return <div>{this.state.error}</div>;
     }
 
-    if (!this.state.viewingLobby) {
+    if (!this.state.isViewingLobby && !this.state.isAtTable) {
       return (
         <div>
           <div>Welcome</div>
@@ -80,33 +86,33 @@ class SignalConnection extends React.Component<{}, IState> {
       );
     }
 
-    if (this.state.tableInfo) {
-      return <Table tableInfo={this.state.tableInfo} />;
+    if (this.state.isViewingLobby) {
+      const tableKeyArray: string[] = Object.keys(this.state.tables);
+      return (
+        <div>
+          Table Lobby
+          {tableKeyArray.length === 0 ? (
+            <div>No Tables Available</div>
+          ) : (
+            <div>
+              <div>Choose a table to join</div>
+              {tableKeyArray.map((key: string) => {
+                const table: ITable = this.state.tables[key];
+                return (
+                  <div key={table.id}>
+                    <button id={table.id} onClick={this.joinTable}>
+                      {table.name}
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      );
     }
 
-    const tableKeyArray: string[] = Object.keys(this.state.tables);
-    return (
-      <div>
-        Table Lobby
-        {tableKeyArray.length === 0 ? (
-          <div>No Tables Availalbe</div>
-        ) : (
-          <div>
-            <div>Choose a table to join</div>
-            {tableKeyArray.map((key: string) => {
-              const table: ITable = this.state.tables[key];
-              return (
-                <div key={table.id}>
-                  <button id={table.id} onClick={this.joinTable}>
-                    {table.name}
-                  </button>
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
-    );
+    return <Hand isGamePlaying={this.state.isGamePlaying} />;
   }
 }
 
