@@ -1,10 +1,10 @@
-import * as React from 'react';
-import { HubConnectionBuilder } from '@aspnet/signalr';
-import Hand from '../Hand/Hand';
-import { ITable } from '../shared/types/interfaces';
+import * as React from "react";
+import { HubConnectionBuilder } from "@aspnet/signalr";
+import Hand from "../Hand/Hand";
+import { ITable } from "../shared/types/interfaces";
 
 const connection = new HubConnectionBuilder()
-  .withUrl('http://192.168.1.78:5000/pokerHub')
+  .withUrl("http://10.0.0.66:5000/pokerHub")
   .build();
 
 interface IState {
@@ -18,7 +18,7 @@ interface IState {
 
 class SignalConnection extends React.Component<{}, IState> {
   public state: IState = {
-    error: '',
+    error: "",
     isAtTable: false,
     isConnected: false,
     isGamePlaying: false,
@@ -39,15 +39,15 @@ class SignalConnection extends React.Component<{}, IState> {
       .then(() => this.setState({ isConnected: true }))
       .catch(err => this.setState({ error: err.toString() }));
 
-    connection.on('ViewTables', tables => {
+    connection.on("ViewTables", tables => {
       this.setState({ tables, isViewingLobby: true });
     });
 
-    connection.on('JoinedTable', (isGamePlaying: boolean) => {
+    connection.on("JoinedTable", (isGamePlaying: boolean) => {
       this.setState({ isAtTable: true, isViewingLobby: false, isGamePlaying });
     });
 
-    connection.on('GameStarted', (isGamePlaying: boolean) => {
+    connection.on("GameStarted", (isGamePlaying: boolean) => {
       this.setState({ isGamePlaying });
     });
   }
@@ -55,7 +55,7 @@ class SignalConnection extends React.Component<{}, IState> {
   public getTables() {
     if (this.state.isConnected) {
       connection
-        .invoke('GetTables')
+        .invoke("GetTables")
         .catch(err => this.setState({ error: err.toString() }));
     }
   }
@@ -63,7 +63,7 @@ class SignalConnection extends React.Component<{}, IState> {
   public joinTable(event: React.MouseEvent<HTMLElement>) {
     if (this.state.isConnected) {
       connection
-        .invoke('JoinTable', event.currentTarget.id)
+        .invoke("JoinTable", event.currentTarget.id)
         .catch(err => this.setState({ error: err.toString() }));
     }
   }
