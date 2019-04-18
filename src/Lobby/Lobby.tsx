@@ -8,12 +8,12 @@ export default () => {
   const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
-    connection.on("ResponseTables", fetchedTables => {
+    connection.on("PostTables", fetchedTables => {
       setTables(fetchedTables);
     });
-    connection.invoke("RequestTables").catch(err => setHasError(true));
+    connection.invoke("GetTables").catch(err => setHasError(true));
     return function cleanup() {
-      connection.off("ResponseTables");
+      connection.off("PostTables");
     };
   }, []);
 
