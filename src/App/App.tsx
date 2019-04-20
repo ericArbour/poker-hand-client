@@ -4,10 +4,13 @@ import ConnectionContext from "../contexts/ConnectionContext";
 import Route from "../Route/Route";
 import Home from "../Home/Home";
 import Lobby from "../Lobby/Lobby";
+import Table from "../Table/Table";
+import { ITable } from "../shared/types/interfaces";
 
 export default () => {
   const [isConnected, setIsConnected] = useState(false);
   const [hasError, setHasError] = useState(false);
+  const [table, setTable] = useState<ITable | null>(null);
   const connection = useContext(ConnectionContext);
 
   useEffect(() => {
@@ -17,7 +20,13 @@ export default () => {
       .catch(err => {
         setHasError(true);
       });
+
+    connection.on("TableUpdated", (updatedTable: ITable) =>
+      setTable(updatedTable)
+    );
+
     return function cleanup() {
+      connection.off("TableUpdated");
       connection.stop();
     };
   }, [connection]);
@@ -35,8 +44,9 @@ export default () => {
           <Link to="lobby">Table Lobby</Link>
         </nav>
         <Router>
-          <Route path="/" component={Home} />
-          <Route path="lobby" component={Lobby} />
+          <Route path="/" render={<Home />} />
+          <Route path="lobby" render={<Lobby setTable={setTable} />} />
+          <Route path="table" render={<Table table={table} />} />
         </Router>
       </div>
     );

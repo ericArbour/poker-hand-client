@@ -1,13 +1,11 @@
 // Wrapper component for reach/router typescript compatibility
 // https://github.com/reach/router/issues/141
 
-import React, { FunctionComponent } from "react";
+import { FunctionComponent } from "react";
 import { RouteComponentProps } from "@reach/router";
 
-type Props = { component: FunctionComponent } & RouteComponentProps;
+type Props = { render: JSX.Element } & RouteComponentProps;
 
-const Route: FunctionComponent<Props> = ({ component: Component, ...rest }) => (
-  <Component {...rest} />
-);
+const Route: FunctionComponent<Props> = ({ render, ...rest }) => render;
 
 export default Route;
