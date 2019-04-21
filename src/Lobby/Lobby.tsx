@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect, useCallback } from "react";
 import { navigate } from "@reach/router";
-import ConnectionContext from "../contexts/ConnectionContext";
+import ConnectionContext from "../shared/contexts/ConnectionContext";
 import { ITable } from "../shared/types/interfaces";
 
 type Props = {

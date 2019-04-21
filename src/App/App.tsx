@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from "react";
 import { Router, Link } from "@reach/router";
-import ConnectionContext from "../contexts/ConnectionContext";
-import Route from "../Route/Route";
+import ConnectionContext from "../shared/contexts/ConnectionContext";
+import Route from "../shared/Route/Route";
 import Home from "../Home/Home";
 import Lobby from "../Lobby/Lobby";
 import Table from "../Table/Table";

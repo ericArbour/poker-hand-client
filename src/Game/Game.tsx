@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import ConnectionContext from "src/contexts/ConnectionContext";
+import ConnectionContext from "../shared/contexts/ConnectionContext";
 import { IPlayer } from "../shared/types/interfaces";
 
 type Props = {
