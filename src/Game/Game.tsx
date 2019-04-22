@@ -22,13 +22,13 @@ export default ({ tableId }: Props) => {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    connection
-      .invoke("GetPlayerGameState", tableId)
-      .catch(err => setError("Error retrieving game."));
-
     connection.on("PostPlayerGameState", updatedGameState =>
       setPlayerGameState(updatedGameState)
     );
+
+    connection
+      .invoke("GetPlayerGameState", tableId)
+      .catch(err => setError("Error retrieving game."));
 
     return function cleanup() {
       connection.off("PostPlayerGameState");
