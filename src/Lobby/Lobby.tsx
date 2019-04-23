@@ -5,9 +5,10 @@ import { ITable } from "../shared/types/interfaces";
 
 type Props = {
   setTable: React.Dispatch<React.SetStateAction<ITable | null>>;
+  setPlayerId: React.Dispatch<React.SetStateAction<string | null>>;
 };
 
-export default ({ setTable }: Props) => {
+export default ({ setTable, setPlayerId }: Props) => {
   const connection = useContext(ConnectionContext);
   const [tables, setTables] = useState<ITable[]>([]);
   const [error, setError] = useState("");
@@ -25,8 +26,9 @@ export default ({ setTable }: Props) => {
     connection.on("PostTables", fetchedTables => {
       setTables(fetchedTables);
     });
-    connection.on("JoinedTable", (table: ITable) => {
+    connection.on("JoinedTable", (table: ITable, playerId) => {
       setIsJoiningTable(false);
+      setPlayerId(playerId);
       setTable(table);
       navigate("/table");
     });

@@ -11,6 +11,7 @@ export default () => {
   const [isConnected, setIsConnected] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [table, setTable] = useState<ITable | null>(null);
+  const [playerId, setPlayerId] = useState<string | null>(null);
   const connection = useContext(ConnectionContext);
 
   useEffect(() => {
@@ -45,8 +46,14 @@ export default () => {
         </nav>
         <Router>
           <Route path="/" render={<Home />} />
-          <Route path="lobby" render={<Lobby setTable={setTable} />} />
-          <Route path="table" render={<Table table={table} />} />
+          <Route
+            path="lobby"
+            render={<Lobby setTable={setTable} setPlayerId={setPlayerId} />}
+          />
+          <Route
+            path="table"
+            render={<Table table={table} playerId={playerId} />}
+          />
         </Router>
       </div>
     );
